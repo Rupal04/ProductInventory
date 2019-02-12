@@ -12,7 +12,9 @@ class ErrorConstants(object):
     PRODUCT_NOT_FOUND = "No Product for the particular search has been found."
     PRODUCT_ID_MISSING = "Missing Product ID"
     PRODUCT_LISTING_ERROR = "Error in listing Products."
+    PRODUCT_NAME_ERROR = "Product Name not provided."
+    PRODUCT_NAME_ALREADY_EXISTS = "Product of that name already present."
 
 
 class Warn(object):
-    CONTACT_ID_REQUIRED = "Contact ID required "
+    PRODUCT_ID_REQUIRED = "Product ID required "

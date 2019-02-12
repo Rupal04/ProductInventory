@@ -22,7 +22,7 @@ class PublishProductResponse(object):
         self.success = True
 
 
-class ContactListResponse(object):
+class ProductListResponse(object):
     def __init__(self, results=None, msg=SuccessConstants.SUCCESS_RESPONSE):
         if results is not None:
             self.results = results

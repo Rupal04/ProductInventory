@@ -1,15 +1,11 @@
 import logging
-import redis
-import json
 
 from product_app.constants import ErrorConstants, SuccessConstants
-from product_app.keys import get_product_list, CacheNameSpace, get_category_list
 from product_app.models import Product, Category
 from product_app.response import PublishProductResponse, ErrorResponse, ProductListResponse, SuccessResponse, \
     PublishCategoryResponse, CategoryListResponse, ProductResponse
 
 logger = logging.getLogger(__name__)
-r_cache = redis.StrictRedis()
 
 def to_dict(obj):
     """Represent instance of a class as dict.
@@ -79,7 +75,8 @@ def get_products():
                 for category in categories:
                     category_id_list.append(category["id"])
                 product_obj_dict = ProductResponse(id=product.id, name= product.name,
-                                                   quantity=product.quantity, price=product.price, category_ids = category_id_list)
+                                                   quantity=product.quantity, price=product.price,
+                                                   category_ids = category_id_list)
                 product_obj_list.append(product_obj_dict)
 
         else:
@@ -110,6 +107,12 @@ def update_product(pid, **kwargs):
                 price = kwargs["product_price"]
                 product_obj.price = price
 
+            product_obj.category.clear()
+            if kwargs["category_ids"]:
+                for category_id in kwargs["category_ids"]:
+                    category_obj = Category.objects.get(id=category_id)
+                    product_obj.category.add(category_obj)
+
             product_obj.save()
 
             response = SuccessResponse(msg=SuccessConstants.PRODUCT_UPDATE_SUCCESS)
@@ -131,7 +134,7 @@ def create_category(**kwargs):
         if not Category.objects.filter(name=name):
             category_obj = Category.objects.create(name=name)
         else:
-            response = ErrorResponse(msg=ErrorConstants.PRODUCT_NAME_ALREADY_EXISTS)
+            response = ErrorResponse(msg=ErrorConstants.CATEGORY_NAME_ALREADY_EXISTS)
             return response
 
         if kwargs["parent_category_id"]:
@@ -148,7 +151,6 @@ def create_category(**kwargs):
 
 def get_categories():
     try:
-        category_list_resp = []
         category_without_pid_list=[]
         category_with_pid_list=[]
 
@@ -178,14 +180,11 @@ def get_categories():
                 if child_category_list_with_same_pid:
                     child_dicts["child_categories"] = child_category_list_with_same_pid
 
-            category_list_resp = category_without_pid_list
-            r_cache.set(get_category_list(), category_list_resp, CacheNameSpace.CATEGORY_LIST[1])
-
         else:
             response = ErrorResponse(msg=ErrorConstants.CATEGORY_NOT_FOUND)
             return response
 
-        response = CategoryListResponse(category_list_resp)
+        response = CategoryListResponse(category_without_pid_list)
         return response
     except Exception as e:
         logger.error(ErrorConstants.PRODUCT_LISTING_ERROR + str(e), exc_info=True)

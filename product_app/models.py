@@ -10,6 +10,7 @@ class Category(models.Model):
     name = models.CharField(max_length=100, null=True)
     parent_category_id = models.IntegerField(null=True)
 
+
 class Product(models.Model):
     class Meta:
         db_table = "product"

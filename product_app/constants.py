@@ -20,6 +20,7 @@ class ErrorConstants(object):
     CATEGORY_CREATION_ERROR = "Unable to create Category."
     CATEGORY_LISTING_ERROR = "Error in listing Categories."
     CATEGORY_NOT_FOUND = "No Category for the particular search has been found."
+    CATEGORY_NAME_ALREADY_EXISTS = "Category of that name already present."
 
 
 class Warn(object):

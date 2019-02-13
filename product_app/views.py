@@ -17,7 +17,7 @@ class CategoryViewSet(viewsets.ViewSet):
 
             category_name = data.get("name", "")
 
-            if category_name is None:
+            if not category_name:
                 response = ErrorResponse(msg=ErrorConstants.CATEGORY_NAME_NOT_PROVIDED)
                 return Response(to_dict(response), status=status.HTTP_400_BAD_REQUEST)
 
@@ -126,9 +126,10 @@ class ProductViewSet(viewsets.ViewSet):
             product_name = data.get("name", "")
             product_quantity = int(data.get("quantity", 0))
             product_price = int(data.get("price", 0))
+            category_ids = data.get("category_ids", [])
 
             update_product_response = update_product(pid, product_name=product_name, product_quantity=product_quantity,
-                                                     product_price=product_price)
+                                                     product_price=product_price, category_ids=category_ids)
 
             if not update_product_response:
                 response = ErrorResponse(msg=ErrorConstants.PRODUCT_UPDATE_ERROR)

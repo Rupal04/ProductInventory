@@ -166,23 +166,24 @@ def get_categories():
                     category_without_pid_dict = {"id":category.id, "name":category.name}
                     category_without_pid_list.append(category_without_pid_dict)
 
-            for dicts in category_with_pid_list:
-                id = dicts["id"]
-                category_with_same_pid = list(filter(lambda catgeory_with_pid: catgeory_with_pid['pid'] == id,
-                                                     category_with_pid_list))
-                if category_with_same_pid:
-                    dicts["child_categories"] = category_with_same_pid
-
-            for child_dicts in category_without_pid_list:
-                id = child_dicts["id"]
-                child_category_list_with_same_pid = list(filter(lambda child_catgeory_with_pid: child_catgeory_with_pid['pid'] == id,
-                                                                category_with_pid_list))
-                if child_category_list_with_same_pid:
-                    child_dicts["child_categories"] = child_category_list_with_same_pid
-
         else:
             response = ErrorResponse(msg=ErrorConstants.CATEGORY_NOT_FOUND)
             return response
+
+        for dicts in category_with_pid_list:
+            id = dicts["id"]
+            category_with_same_pid = list(filter(lambda catgeory_with_pid: catgeory_with_pid['pid'] == id,
+                                                 category_with_pid_list))
+            if category_with_same_pid:
+                dicts["child_categories"] = category_with_same_pid
+
+        for child_dicts in category_without_pid_list:
+            id = child_dicts["id"]
+            child_category_list_with_same_pid = list(
+                filter(lambda child_catgeory_with_pid: child_catgeory_with_pid['pid'] == id,
+                       category_with_pid_list))
+            if child_category_list_with_same_pid:
+                child_dicts["child_categories"] = child_category_list_with_same_pid
 
         response = CategoryListResponse(category_without_pid_list)
         return response
